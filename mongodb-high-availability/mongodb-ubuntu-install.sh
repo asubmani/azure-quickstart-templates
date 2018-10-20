@@ -229,39 +229,6 @@ configure_replicaset()
 	
 	# Attempt to start the MongoDB daemon so that configuration changes take effect
 	start_mongodb
-	
-	# Initiate a replica set (only run this section on the very last node)
-	#if [ "$IS_LAST_MEMBER" = true ]; then
-	#	# Log a message to facilitate troubleshooting
-	#	log "Initiating a replica set $REPLICA_SET_NAME with $INSTANCE_COUNT members"
-	#
-	#	# Initiate a replica set
-	#	mongo --authenticationDatabase "admin" -u $ADMIN_USER_NAME -p $ADMIN_USER_PASSWORD --host 127.0.0.1 --eval "printjson(rs.initiate())"
-	#	
-	#	# Add all members except this node as it will be included into the replica set after the above command completes
-	#	for (( n=0 ; n<($INSTANCE_COUNT-1) ; n++)) 
-	#	do# 
-	#		MEMBER_HOST="${NODE_IP_PREFIX}${n}:${MONGODB_PORT}"			
-	#		log "Adding member $MEMBER_HOST to replica set $REPLICA_SET_NAME" 
-        # mongo --authenticationDatabase "admin" -u $ADMIN_USER_NAME -p $ADMIN_USER_PASSWORD --host 127.0.0.1 --eval "printjson(rs.add('${MEMBER_HOST}'))"
-        # done
-        # Print the current replica set configuration
-        # mongo --authenticationDatabase "admin" -u $ADMIN_USER_NAME -p $ADMIN_USER_PASSWORD --host 127.0.0.1 --eval "printjson(rs.conf())"
-        # mongo --authenticationDatabase "admin" -u $ADMIN_USER_NAME -p $ADMIN_USER_PASSWORD --host 127.0.0.1 --eval "printjson(rs.status())"
-        # fi
-	
-	# Register an arbiter node with the replica set
-	if [ "$IS_ARBITER" = true ]; then
-	
-		# Work out the IP address of the last member node where we initiated a replica set
-		let "PRIMARY_MEMBER_INDEX=$INSTANCE_COUNT-1"
-		PRIMARY_MEMBER_HOST="${NODE_IP_PREFIX}${PRIMARY_MEMBER_INDEX}:${MONGODB_PORT}"
-		CURRENT_NODE_IPS=`ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1'`
-		CURRENT_NODE_IP=${CURRENT_NODE_IPS[@]}
-
-		log "Adding an arbiter ${HOSTNAME} ($CURRENT_NODE_IP) node to the replica set $REPLICA_SET_NAME"
-		mongo --authenticationDatabase "admin" -u $ADMIN_USER_NAME -p $ADMIN_USER_PASSWORD --host $PRIMARY_MEMBER_HOST --eval "printjson(rs.addArb('${CURRENT_NODE_IP}'))"
-	fi
 }
 
 #############################################################################
