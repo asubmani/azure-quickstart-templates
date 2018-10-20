@@ -241,14 +241,13 @@ configure_replicaset()
 		# Add all members except this node as it will be included into the replica set after the above command completes
 		for (( n=0 ; n<($INSTANCE_COUNT-1) ; n++)) 
 		do 
-			MEMBER_HOST="${NODE_IP_PREFIX}${n}:${MONGODB_PORT}"
-			
+			MEMBER_HOST="${NODE_IP_PREFIX}${n}:${MONGODB_PORT}"			
 			log "Adding member $MEMBER_HOST to replica set $REPLICA_SET_NAME" 
-			mongo --authenticationDatabase "admin" -u $ADMIN_USER_NAME -p $ADMIN_USER_PASSWORD --host 127.0.0.1 --eval "printjson(rs.add('${MEMBER_HOST}'))"
-            done
+            mongo --authenticationDatabase "admin" -u $ADMIN_USER_NAME -p $ADMIN_USER_PASSWORD --host 127.0.0.1 --eval "printjson(rs.add('${MEMBER_HOST}'))"
+        done
         # Print the current replica set configuration
-        mongo --authenticationDatabase "admin" -u $ADMIN_USER_NAME -p $ADMIN_USER_PASSWORD --host 127.0.0.1 --eval "printjson(rs.conf())"	
-        mongo --authenticationDatabase "admin" -u $ADMIN_USER_NAME -p $ADMIN_USER_PASSWORD --host 127.0.0.1 --eval "printjson(rs.status())"	
+        mongo --authenticationDatabase "admin" -u $ADMIN_USER_NAME -p $ADMIN_USER_PASSWORD --host 127.0.0.1 --eval "printjson(rs.conf())"
+        mongo --authenticationDatabase "admin" -u $ADMIN_USER_NAME -p $ADMIN_USER_PASSWORD --host 127.0.0.1 --eval "printjson(rs.status())"
         fi
 	
 	# Register an arbiter node with the replica set
